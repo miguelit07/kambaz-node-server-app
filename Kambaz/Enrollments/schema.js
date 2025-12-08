@@ -15,4 +15,7 @@ const enrollmentSchema = new mongoose.Schema(
   },
   { collection: "enrollments" }
 );
+
+// Create compound index to prevent duplicate enrollments
+enrollmentSchema.index({ user: 1, course: 1 }, { unique: true });
 export default enrollmentSchema;

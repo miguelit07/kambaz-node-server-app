@@ -15,12 +15,23 @@ export default function EnrollmentsDao(db) {
     return enrollments.map((enrollment) => enrollment.user);
   }
 
-  function enrollUserInCourse(userId, courseId) {
-    return model.create({
-      user: userId,
-      course: courseId,
-      _id: `${userId}-${courseId}`,
-    });
+  async function enrollUserInCourse(userId, courseId) {
+    // Use findOneAndUpdate with upsert to handle duplicates gracefully
+    const enrollment = await model.findOneAndUpdate(
+      { user: userId, course: courseId },
+      { 
+        user: userId, 
+        course: courseId, 
+        enrollmentDate: new Date(),
+        status: "ENROLLED"
+      },
+      { 
+        new: true, 
+        upsert: true,
+        setDefaultsOnInsert: true
+      }
+    );
+    return enrollment;
   }
   function unenrollUserFromCourse(user, course) {
     return model.deleteOne({ user, course });

@@ -4,7 +4,10 @@ import model from "../Courses/model.js";
 export default function ModulesDao(db) {
   async function findModulesForCourse(courseId) {
     const course = await model.findById(courseId);
-    return course.modules;
+    if (!course) {
+      return [];
+    }
+    return course.modules || [];
   }
 
   async function createModule(courseId, module) {
